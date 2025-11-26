@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorldClass | Future-Ready Learning</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Custom Config for Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e40af', // Blue 800
+                        secondary: '#3b82f6', // Blue 500
+                        accent: '#eff6ff', // Blue 50
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Shared Components ---
+
+        // Editable Text Component
+        // Handles display and modification of text when in Admin Mode
+        const Editable = ({ tag: Tag, text, onUpdate, isAdmin, className }) => {
+            const handleEdit = () => {
+                if (!isAdmin) return;
+                const newText = window.prompt("Edit text:", text);
+                if (newText !== null && newText.trim() !== "") {
+                    onUpdate(newText);
+                }
+            };
+
+            return (
+                <div className={`relative group inline-block ${className}`}>
+                    <Tag className="inline">{text}</Tag>
+                    {isAdmin && (
+                        <button 
+                            onClick={handleEdit} 
+                            className="ml-2 text-xs bg-yellow-400 text-black px-2 py-1 rounded hover:bg-yellow-500 transition shadow-sm align-middle"
+                            title="Edit Text"
+                        >
+                            <i className="fas fa-pencil-alt"></i>
+                        </button>
+                    )}
+                </div>
+            );
+        };
+
+        // --- Page Components ---
+
+        const Home = ({ isAdmin }) => {
+            const [heroTitle, setHeroTitle] = useState("Future-Ready Skills");
+            const [heroSubtitle, setHeroSubtitle] = useState("Unlock your potential with world-class education.");
+            
+            // Features Data
+            const [features, setFeatures] = useState([
+                { id: 1, title: "Live Classes", icon: "fa-video", desc: "Real-time interaction with top instructors worldwide." },
+                { id: 2, title: "Global Certificates", icon: "fa-certificate", desc: "Earn accredited certifications recognized globally." },
+                { id: 3, title: "Expert Mentors", icon: "fa-user-tie", desc: "Get guidance from industry leaders and professionals." }
+            ]);
+
+            const updateFeatureTitle = (id, newTitle) => {
+                setFeatures(features.map(f => f.id === id ? { ...f, title: newTitle } : f));
+            };
+
+            return (
+                <div className="fade-in">
+                    {/* Hero Section */}
+                    <section className="bg-primary text-white py-20 px-4 text-center rounded-br-[50px]">
+                        <div className="max-w-4xl mx-auto">
+                            <Editable 
+                                tag="h1" 
+                                className="text-5xl md:text-6xl font-bold mb-6" 
+                                text={heroTitle} 
+                                onUpdate={setHeroTitle} 
+                                isAdmin={isAdmin} 
+                            />
+                            <br/>
+                            <Editable 
+                                tag="p" 
+                                className="text-xl md:text-2xl text-blue-100 mb-8" 
+                                text={heroSubtitle} 
+                                onUpdate={setHeroSubtitle} 
+                                isAdmin={isAdmin} 
+                            />
+                            <button className="bg-white text-primary font-bold py-3 px-8 rounded-full shadow-lg hover:bg-blue-50 transition transform hover:-translate-y-1">
+                                Get Started
+                            </button>
+                        </div>
+                    </section>
+
+                    {/* Features Grid */}
+                    <section className="py-16 px-4 max-w-7xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {features.map(feature => (
+                                <div key={feature.id} className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition border-t-4 border-secondary text-center">
+                                    <div className="w-16 h-16 bg-blue-100 text-primary rounded-full flex items-center justify-center mx-auto mb-6 text-2xl">
+                                        <i className={`fas ${feature.icon}`}></i>
+                                    </div>
+                                    <Editable 
+                                        tag="h3" 
+                                        className="text-xl font-bold mb-3" 
+                                        text={feature.title} 
+                                        onUpdate={(val) => updateFeatureTitle(feature.id, val)} 
+                                        isAdmin={isAdmin} 
+                                    />
+                                    <p className="text-gray-600">{feature.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                </div>
+            );
+        };
+
+        const Services = ({ isAdmin }) => {
+            const [services, setServices] = useState([
+                { id: 1, name: "Course Design", desc: "Tailored curriculum development for institutions." },
+                { id: 2, name: "Student Counseling", desc: "Career path guidance and mental health support." },
+                { id: 3, name: "Corporate Training", desc: "Upskilling teams for the modern workforce." },
+                { id: 4, name: "LMS Integration", desc: "Seamless Learning Management System setup." }
+            ]);
+
+            const updateServiceName = (id, newName) => {
+                setServices(services.map(s => s.id === id ? { ...s, name: newName } : s));
+            };
+
+            return (
+                <div className="fade-in max-w-7xl mx-auto py-16 px-4">
+                    <h2 className="text-4xl font-bold text-center text-primary mb-12">Our Services</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {services.map((service, index) => (
+                            <div key={service.id} className="flex items-start bg-white p-6 rounded-lg shadow hover:shadow-md transition">
+                                <div className="text-secondary text-2xl mr-4 mt-1">
+                                    <i className="fas fa-check-circle"></i>
+                                </div>
+                                <div>
+                                    <Editable 
+                                        tag="h3" 
+                                        className="text-xl font-semibold mb-2" 
+                                        text={service.name} 
+                                        onUpdate={(val) => updateServiceName(service.id, val)} 
+                                        isAdmin={isAdmin} 
+                                    />
+                                    <p className="text-gray-600">{service.desc}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const Destinations = () => {
+            const pathways = [
+                { title: "Civil Engineering", image: "https://picsum.photos/400/250?random=1", category: "Engineering" },
+                { title: "Robotics", image: "https://picsum.photos/400/250?random=2", category: "Technology" },
+                { title: "AI Ethics", image: "https://picsum.photos/400/250?random=3", category: "Humanities" },
+                { title: "Data Science", image: "https://picsum.photos/400/250?random=4", category: "Technology" },
+                { title: "Digital Marketing", image: "https://picsum.photos/400/250?random=5", category: "Business" },
+                { title: "Sustainable Design", image: "https://picsum.photos/400/250?random=6", category: "Architecture" },
+            ];
+
+            return (
+                <div className="fade-in max-w-7xl mx-auto py-16 px-4">
+                    <div className="text-center mb-12">
+                        <h2 className="text-4xl font-bold text-primary">Explore Pathways</h2>
+                        <p className="text-xl text-gray-500 mt-4">Discover your future career destination.</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {pathways.map((path, idx) => (
+                            <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 group">
+                                <div className="overflow-hidden h-48">
+                                    <img src={path.image} alt={path.title} className="w-full h-full object-cover transform group-hover:scale-110 transition duration-500" />
+                                </div>
+                                <div className="p-6">
+                                    <span className="text-xs font-bold text-secondary uppercase tracking-wider">{path.category}</span>
+                                    <h3 className="text-2xl font-bold mt-2 mb-4 group-hover:text-primary transition">{path.title}</h3>
+                                    <button className="text-primary font-semibold hover:underline">View Pathway <i className="fas fa-arrow-right ml-1"></i></button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const Blog = ({ isAdmin }) => {
+            const [posts, setPosts] = useState([
+                { id: 1, title: "The Future of Remote Learning", date: "Oct 24, 2023", summary: "How technology is reshaping the classroom experience." },
+                { id: 2, title: "Top 10 Skills for 2025", date: "Nov 12, 2023", summary: "What employers are looking for in the next decade." },
+                { id: 3, title: "Balancing Work and Study", date: "Dec 05, 2023", summary: "Tips for professionals pursuing further education." }
+            ]);
+
+            const deletePost = (id) => {
+                if (window.confirm("Are you sure you want to delete this post?")) {
+                    setPosts(posts.filter(p => p.id !== id));
+                }
+            };
+
+            return (
+                <div className="fade-in max-w-4xl mx-auto py-16 px-4">
+                    <h2 className="text-4xl font-bold text-primary mb-12 text-center">Latest Insights</h2>
+                    <div className="space-y-8">
+                        {posts.map(post => (
+                            <div key={post.id} className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition relative">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="text-sm text-gray-400 mb-2"><i className="far fa-calendar-alt mr-2"></i>{post.date}</p>
+                                        <h3 className="text-2xl font-bold mb-3 text-gray-800">{post.title}</h3>
+                                        <p className="text-gray-600 leading-relaxed">{post.summary}</p>
+                                        <button className="mt-4 text-secondary font-medium hover:text-primary">Read More</button>
+                                    </div>
+                                    {isAdmin && (
+                                        <button 
+                                            onClick={() => deletePost(post.id)}
+                                            className="bg-red-50 text-red-600 px-3 py-1 rounded hover:bg-red-100 transition text-sm"
+                                        >
+                                            <i className="fas fa-trash-alt mr-1"></i> Delete
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                        {posts.length === 0 && (
+                            <div className="text-center text-gray-500 py-10">
+                                <i className="fas fa-inbox text-4xl mb-4"></i>
+                                <p>No blog posts available.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const Contact = () => {
+            return (
+                <div className="fade-in max-w-2xl mx-auto py-16 px-4">
+                    <div className="bg-white p-8 md:p-12 rounded-2xl shadow-xl">
+                        <h2 className="text-3xl font-bold text-primary mb-6 text-center">Get in Touch</h2>
+                        <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                                <input type="text" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition" placeholder="John Doe" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                <input type="email" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition" placeholder="john@example.com" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                                <textarea rows="4" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition" placeholder="How can we help you?"></textarea>
+                            </div>
+                            <button className="w-full bg-primary text-white font-bold py-3 rounded-lg hover:bg-blue-800 transition transform active:scale-95 shadow-lg">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Main App Component ---
+
+        const App = () => {
+            const [currentPage, setCurrentPage] = useState('home');
+            const [isAdmin, setIsAdmin] = useState(false);
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+            const navItems = [
+                { id: 'home', label: 'Home' },
+                { id: 'services', label: 'Services' },
+                { id: 'destinations', label: 'Pathways' }, // Renamed for display
+                { id: 'blog', label: 'Blog' },
+                { id: 'contact', label: 'Contact' }
+            ];
+
+            const renderPage = () => {
+                switch(currentPage) {
+                    case 'home': return <Home isAdmin={isAdmin} />;
+                    case 'services': return <Services isAdmin={isAdmin} />;
+                    case 'destinations': return <Destinations />;
+                    case 'blog': return <Blog isAdmin={isAdmin} />;
+                    case 'contact': return <Contact />;
+                    default: return <Home isAdmin={isAdmin} />;
+                }
+            };
+
+            return (
+                <div className="flex flex-col min-h-screen">
+                    {/* Navigation */}
+                    <nav className="bg-white shadow-md sticky top-0 z-50">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="flex justify-between h-20">
+                                <div className="flex items-center cursor-pointer" onClick={() => setCurrentPage('home')}>
+                                    <div className="w-10 h-10 bg-primary text-white rounded flex items-center justify-center text-xl font-bold mr-2">W</div>
+                                    <span className="text-2xl font-bold text-gray-800 tracking-tight">World<span className="text-secondary">Class</span></span>
+                                </div>
+                                
+                                {/* Desktop Menu */}
+                                <div className="hidden md:flex items-center space-x-8">
+                                    {navItems.map(item => (
+                                        <button 
+                                            key={item.id}
+                                            onClick={() => setCurrentPage(item.id)}
+                                            className={`font-medium transition ${currentPage === item.id ? 'text-primary border-b-2 border-primary' : 'text-gray-500 hover:text-primary'}`}
+                                        >
+                                            {item.label}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Mobile Menu Button */}
+                                <div className="md:hidden flex items-center">
+                                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-500 hover:text-primary focus:outline-none">
+                                        <i className={`fas ${isMenuOpen ? 'fa-times' : 'fa-bars'} text-2xl`}></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Mobile Dropdown */}
+                        {isMenuOpen && (
+                            <div className="md:hidden bg-white border-t border-gray-100">
+                                <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                                    {navItems.map(item => (
+                                        <button 
+                                            key={item.id}
+                                            onClick={() => { setCurrentPage(item.id); setIsMenuOpen(false); }}
+                                            className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${currentPage === item.id ? 'bg-blue-50 text-primary' : 'text-gray-700 hover:bg-gray-50'}`}
+                                        >
+                                            {item.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </nav>
+
+                    {/* Main Content */}
+                    <main className="flex-grow">
+                        {renderPage()}
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="bg-gray-800 text-gray-300 py-12">
+                        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+                            <div>
+                                <h4 className="text-white text-lg font-bold mb-4">WorldClass</h4>
+                                <p className="text-sm">Empowering learners worldwide with future-ready skills and expert guidance.</p>
+                            </div>
+                            <div>
+                                <h4 className="text-white text-lg font-bold mb-4">Quick Links</h4>
+                                <ul className="space-y-2 text-sm">
+                                    <li><a href="#" onClick={() => setCurrentPage('home')} className="hover:text-white">Home</a></li>
+                                    <li><a href="#" onClick={() => setCurrentPage('services')} className="hover:text-white">Services</a></li>
+                                    <li><a href="#" onClick={() => setCurrentPage('contact')} className="hover:text-white">Contact</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="text-white text-lg font-bold mb-4">Contact</h4>
+                                <ul className="space-y-2 text-sm">
+                                    <li><i className="fas fa-envelope mr-2"></i> info@worldclass.edu</li>
+                                    <li><i className="fas fa-phone mr-2"></i> +1 (555) 123-4567</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="text-white text-lg font-bold mb-4">Follow Us</h4>
+                                <div className="flex space-x-4">
+                                    <a href="#" className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-secondary transition"><i className="fab fa-twitter"></i></a>
+                                    <a href="#" className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-secondary transition"><i className="fab fa-linkedin-in"></i></a>
+                                    <a href="#" className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-secondary transition"><i className="fab fa-facebook-f"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="border-t border-gray-700 mt-10 pt-6 text-center text-sm">
+                            &copy; 2023 WorldClass E-Learning. All rights reserved.
+                        </div>
+                    </footer>
+
+                    {/* Admin Toggle (Fixed Bottom Right) */}
+                    <div className="fixed bottom-6 right-6 z-50">
+                        <button 
+                            onClick={() => setIsAdmin(!isAdmin)}
+                            className={`flex items-center space-x-2 px-4 py-2 rounded-full shadow-lg font-bold transition transform hover:scale-105 ${isAdmin ? 'bg-red-500 text-white' : 'bg-gray-900 text-white'}`}
+                        >
+                            <i className={`fas ${isAdmin ? 'fa-lock-open' : 'fa-lock'}`}></i>
+                            <span>{isAdmin ? 'Admin: ON' : 'Admin Mode'}</span>
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
